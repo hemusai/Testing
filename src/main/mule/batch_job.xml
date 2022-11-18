@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="b8c809b0-1454-4ba4-8bc6-6dc174ecda92" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="batch_jobFlow" doc:id="9c41486c-fb97-4fee-b73f-5c3e9f4b3276" >
+		<http:listener doc:name="Listener" doc:id="282d2686-5672-456c-84f6-e9335b10a33c" config-ref="HTTP_Listener_config" path="/batch"/>
+		<set-payload value='#[[1,2,3,4,5,6,7]]' doc:name='[1,2,"a",4,5,"b","c"]' doc:id="59044415-3596-4b0c-b432-6b40eeaa5a3c" />
+		<batch:job jobName="batch_jobBatch_Job" doc:id="14e0636c-12cc-4c09-a12a-537e135e4646" >
+			<batch:process-records >
+				<batch:step name="Batch_Step" doc:id="f4c5f410-18af-4d67-b2df-8d8297b46070" acceptPolicy="ALL">
+					<set-payload value="#[payload * 10]" doc:name="Payload * 10" doc:id="b73d8b8c-7a54-4f7c-bc41-59e164bfb62f" />
+					<batch:aggregator doc:name="Batch Aggregator" doc:id="20ddfa82-74c0-4de3-8bbb-9a0a02f486c8" size="2">
+						<logger level="INFO" doc:name="Logger" doc:id="ccd29816-7658-481a-a79c-5bb21480fc40" />
+					</batch:aggregator>
+				</batch:step>
+			</batch:process-records>
+			<batch:on-complete >
+				<logger level="INFO" doc:name="Logger" doc:id="d918f1d4-cdb8-48e4-860e-42ba95c950df" />
+			</batch:on-complete>
+		</batch:job>
+	</flow>
+</mule>
